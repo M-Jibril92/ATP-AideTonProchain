@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 
 const MISSIONS = [
@@ -60,6 +61,7 @@ const MISSIONS = [
 
 export default function Tasks() {
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState('Tous');
   const categories = ['Tous', ...new Set(MISSIONS.map(m => m.category))];
 
@@ -76,7 +78,7 @@ export default function Tasks() {
         </p>
       </div>
 
-      {/* Filters */}
+      {/* Filtres */}
       <div style={{ 
         display: 'flex', 
         gap: '0.75rem', 
@@ -96,7 +98,7 @@ export default function Tasks() {
         ))}
       </div>
 
-      {/* Missions Grid */}
+      {/* Missions */}
       <div className="card-grid">
         {filteredMissions.map((m, index) => (
           <div 
@@ -173,14 +175,9 @@ export default function Tasks() {
               </div>
             </div>
 
+            {/* 🔁 Bouton modifié */}
             <button 
-              onClick={() => {
-                addItem(m, 1);
-                // Visual feedback
-                const btn = event.target;
-                btn.textContent = '✅ Ajouté !';
-                setTimeout(() => btn.textContent = '📅 Réserver', 1000);
-              }}
+              onClick={() => navigate('/select-time', { state: { mission: m } })}
               className="btn btn-primary"
               style={{ width: '100%', justifyContent: 'center' }}
             >

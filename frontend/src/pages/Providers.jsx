@@ -5,7 +5,7 @@ const PROVIDERS = [
   { id: 'p2', name: 'Ayman', skills: 'Infatiguable et dynamique je peux réaliser toutes les missions', rating: 4.9, avatar: '👩‍🏫', experience: 'Develloper & étudiant en informatque', missions: 0 },
   { id: 'p3', name: 'Elyas Badry', skills: 'Informatique, Dépannage et performant dans toutes les missions physiques', rating: 4.7, avatar: '👨‍💻', experience: 'Etudiant à EPITA', missions: 0 },
   { id: 'p4', name: 'Naim', skills: 'Promenade chiens, Pet sitting, informatique et grand sportif', rating: 5.0, avatar: '👩‍⚕️', experience: 'Resonsable de la sécurité', missions: 0},
-  { id: 'p5', name: 'Djime', skills: 'Champion de France de Volley', rating: 5.0, avatar: '👩‍⚕️', experience: 'Responsable de la gestion et de la comptabilité', missions: 0},
+  { id: 'p5', name: 'Djime', skills: 'Champion de France de Volley', rating: 5.0, avatar: '👩‍⚕️', grade: 'Responsable de la gestion et de la comptabilité', missions: 0},
 
 
 ];

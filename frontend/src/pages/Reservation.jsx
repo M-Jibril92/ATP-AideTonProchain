@@ -1,7 +1,10 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 
 export default function Reservation() {
+  const { state } = useLocation();
+  const selectedSlot = state?.selectedSlot; // Créneau sélectionné depuis SelectTime
   const { items, removeItem, updateQty, clear } = useCart();
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
 
@@ -35,6 +38,21 @@ export default function Reservation() {
           Finalisez votre réservation en un clic
         </p>
       </div>
+
+      {/* Affichage du créneau sélectionné */}
+      {selectedSlot && (
+        <div className="card" style={{ 
+          maxWidth: '500px', 
+          margin: '1rem auto 2rem', 
+          textAlign: 'center', 
+          border: `2px solid var(--primary)`, 
+          backgroundColor: 'rgba(59, 130, 246, 0.2)' 
+        }}>
+          <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary)' }}>
+            ⏰ Créneau sélectionné : {selectedSlot}
+          </p>
+        </div>
+      )}
 
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
