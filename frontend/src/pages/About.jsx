@@ -76,7 +76,7 @@ export default function About() {
         {/* Version Info */}
         <div className="card" style={{ 
           animation: 'slideUp 1s ease',
-          background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
+          background: 'linear-gradient(135deg, #000000ff, #000000ff)',
           border: '2px dashed var(--primary)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
