@@ -1,10 +1,13 @@
 import React from 'react';
 
 const PROVIDERS = [
-  { id: 'p1', name: 'Jean Dupont', skills: 'Jardinage, Bricolage', rating: 4.8, avatar: '👨‍🌾', experience: '5 ans', missions: 127 },
-  { id: 'p2', name: 'Sophie Martin', skills: 'Garde d\'enfants, Soutien scolaire', rating: 4.9, avatar: '👩‍🏫', experience: '3 ans', missions: 94 },
-  { id: 'p3', name: 'Lucas Bernard', skills: 'Informatique, Dépannage', rating: 4.7, avatar: '👨‍💻', experience: '4 ans', missions: 156 },
-  { id: 'p4', name: 'Marie Dubois', skills: 'Promenade chiens, Pet sitting', rating: 5.0, avatar: '👩‍⚕️', experience: '2 ans', missions: 78 },
+  { id: 'p1', name: 'Mohamed-Jibril', skills: 'Souriant et motivé je souhaite aider le plus de personnes ', rating: 5.0, avatar: '👨‍🌾', experience: 'CEO & Président', missions: 0 },
+  { id: 'p2', name: 'Ayman', skills: 'Infatiguable et dynamique je peux réaliser toutes les missions', rating: 4.9, avatar: '👩‍🏫', experience: 'Develloper & étudiant en informatque', missions: 0 },
+  { id: 'p3', name: 'Elyas Badry', skills: 'Informatique, Dépannage et performant dans toutes les missions physiques', rating: 4.7, avatar: '👨‍💻', experience: 'Etudiant à EPITA', missions: 0 },
+  { id: 'p4', name: 'Naim', skills: 'Promenade chiens, Pet sitting, informatique et grand sportif', rating: 5.0, avatar: '👩‍⚕️', experience: 'Resonsable de la sécurité', missions: 0},
+  { id: 'p5', name: 'Djime', skills: 'Champion de France de Volley', rating: 5.0, avatar: '👩‍⚕️', experience: 'Responsable de la gestion et de la comptabilité', missions: 0},
+
+
 ];
 
 export default function Providers() {

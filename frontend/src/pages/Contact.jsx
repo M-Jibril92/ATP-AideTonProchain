@@ -112,8 +112,8 @@ export default function Contact() {
           <div className="card" style={{ animation: 'slideUp 0.7s ease' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📧</div>
             <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Email</h3>
-            <a href="mailto:contact@aidetonprochain.fr" style={{ color: 'var(--primary)', textDecoration: 'none' }}>
-              contact@aidetonprochain.fr
+            <a href="mailto:aidetonprochain@gmail.com" style={{ color: 'var(--primary)', textDecoration: 'none' }}>
+              Aidetonprochain@gmail.com
             </a>
           </div>
 
