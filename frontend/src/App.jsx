@@ -10,6 +10,7 @@ import Providers from './pages/Providers';
 import Contact from './pages/Contact';
 import Reservation from './pages/Reservation';
 import Login from './pages/Login';
+import Register from './pages/Register';
 
 // Nouvelle page
 import SelectTime from './pages/SelectTime';
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/providers" element={<Providers />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/register" element={<Register />} />
 
           {/* Nouvelle étape : choix du créneau horaire */}
           <Route path="/select-time" element={<SelectTime />} />

@@ -220,12 +220,17 @@ export default function NavBar() {
             </NavLink>
 
             {user ? (
-              <div className="user-section">
-                <div className="user-avatar">{user.name.charAt(0).toUpperCase()}</div>
-                <span className="user-name">{user.name}</span>
-                <button onClick={handleLogout} className="btn-logout">🚪 Déconnexion</button>
-              </div>
-            ) : (
+  <div className="user-section">
+    {/* Correction : On utilise firstName qui vient de la base de données */}
+    <div className="user-avatar">
+      {(user.firstName || user.email).charAt(0).toUpperCase()}
+    </div>
+    <span className="user-name">
+      {user.firstName} {user.lastName}
+    </span>
+    <button onClick={handleLogout} className="btn-logout">🚪 Déconnexion</button>
+  </div>
+) : (
               <NavLink 
                 to="/login"
                 style={{
@@ -237,6 +242,22 @@ export default function NavBar() {
                 🔐 Connexion
               </NavLink>
             )}
+            <NavLink 
+                  to="/register"
+                  style={{
+                    padding:'0.5rem 1rem', 
+                    background:'linear-gradient(135deg,#10b981 0%,#059669 100%)',
+                    color:'white', 
+                    borderRadius:'10px', 
+                    fontWeight:700, 
+                    display:'flex', 
+                    alignItems:'center',
+                    textDecoration: 'none'
+                  }}
+                  onClick={closeMobileMenu}
+                >
+                  📝 S'inscrire
+                </NavLink>
           </div>
 
           <button className="mobile-menu-btn" onClick={()=>setIsMobileMenuOpen(!isMobileMenuOpen)}>

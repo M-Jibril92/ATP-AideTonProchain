@@ -3,71 +3,59 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState(''); // On utilise l'email, plus le "name"
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  
   const { login } = useAuth();
-  const nav = useNavigate();
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name) return;
-    login(name);
-    nav('/');
+    setError('');
+    
+    try {
+      await login(email, password); // Appel au Backend
+      navigate('/tasks'); // Redirection si succès
+    } catch (err) {
+      setError(err.message); // Affiche l'erreur du backend (ex: "Mot de passe faux")
+    }
   };
 
   return (
     <div className="page-container">
-      <div className="card" style={{ 
-        maxWidth: '480px', 
-        margin: '4rem auto',
-        animation: 'slideUp 0.5s ease'
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔐</div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Connexion / Inscription</h1>
-          <p style={{ color: 'var(--text-light)' }}>
-            Connectez-vous pour accéder à tous les services
-          </p>
+      <h1>Connexion</h1>
+      {error && <div style={{color: 'red', marginBottom: '1rem'}}>{error}</div>}
+      
+      <form onSubmit={handleSubmit} style={{maxWidth: '400px', margin: '0 auto'}}>
+        <div style={{marginBottom: '1rem'}}>
+          <label>Email</label>
+          <input 
+            type="email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required 
+            className="form-control"
+            style={{width: '100%', padding: '8px'}}
+          />
+        </div>
+        
+        <div style={{marginBottom: '1rem'}}>
+          <label>Mot de passe</label>
+          <input 
+            type="password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required 
+            className="form-control"
+            style={{width: '100%', padding: '8px'}}
+          />
         </div>
 
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <label className="label">Votre prénom</label>
-            <input 
-              className="input"
-              placeholder="Ex: Sophie" 
-              value={name} 
-              onChange={e => setName(e.target.value)}
-              required
-            />
-          </div>
-
-          <button 
-            type="submit" 
-            className="btn btn-primary"
-            style={{ width: '100%', justifyContent: 'center' }}
-          >
-            🚀 Se connecter / S'inscrire
-          </button>
-        </form>
-
-        <div style={{ 
-          marginTop: '1.5rem', 
-          padding: '1rem',
-          background: 'var(--bg-light)',
-          borderRadius: '8px',
-          border: '1px dashed var(--border)'
-        }}>
-          <p style={{ 
-            fontSize: '0.875rem', 
-            color: 'var(--text-light)', 
-            margin: 0,
-            lineHeight: '1.6'
-          }}>
-            ℹ️ <strong>Mode démo :</strong> Ceci est une authentification simplifiée. 
-            En production, un système complet avec mot de passe, validation et tokens sera implémenté.
-          </p>
-        </div>
-      </div>
+        <button type="submit" className="btn btn-primary">
+          Se connecter
+        </button>
+      </form>
     </div>
   );
 }
