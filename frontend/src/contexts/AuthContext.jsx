@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authAPI } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -19,17 +20,7 @@ export function AuthProvider({ children }) {
 
   // --- FONCTION DE CONNEXION ---
   const login = async (email, password) => {
-    const response = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Erreur de connexion');
-    }
+    const data = await authAPI.login(email, password);
 
     // Sauvegarde locale
     localStorage.setItem('token', data.token);
@@ -39,25 +30,13 @@ export function AuthProvider({ children }) {
 
   // --- FONCTION D'INSCRIPTION ---
   const register = async (userData) => {
-    const response = await fetch('http://localhost:5000/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Erreur d'inscription");
-    }
-    // L'inscription ne connecte pas forcément auto, on renvoie juste OK
-    return true;
+    const data = await authAPI.register(userData);
+    return data;
   };
 
   // --- DÉCONNEXION ---
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    authAPI.logout();
     setUser(null);
   };
 

@@ -1,0 +1,66 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#004DBF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0035A3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D4B4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00A89A;stop-opacity:1" />
+    </linearGradient>
+    <filter id="drop">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-opacity="0.2" flood-color="#000"/>
+    </filter>
+  </defs>
+
+  <!-- MAIN GAUCHE (BLEU) - vient de la gauche-bas -->
+  <!-- Avant-bras -->
+  <path d="M 30 130 L 60 110 L 65 100 Q 70 95 75 100 L 65 120 L 50 140 Q 40 145 30 140 Z" 
+        fill="url(#blue)" filter="url(#drop)"/>
+  
+  <!-- Paume gauche -->
+  <ellipse cx="85" cy="115" rx="26" ry="32" fill="url(#blue)" filter="url(#drop)"/>
+  
+  <!-- Pouce gauche -->
+  <ellipse cx="65" cy="95" rx="12" ry="22" fill="url(#blue)" filter="url(#drop)" transform="rotate(-30 65 95)"/>
+  
+  <!-- Index gauche -->
+  <ellipse cx="75" cy="70" rx="10" ry="35" fill="url(#blue)" filter="url(#drop)" transform="rotate(-20 75 70)"/>
+  
+  <!-- Majeur gauche -->
+  <ellipse cx="92" cy="55" rx="11" ry="42" fill="url(#blue)" filter="url(#drop)" transform="rotate(5 92 55)"/>
+  
+  <!-- Annulaire gauche -->
+  <ellipse cx="110" cy="65" rx="10" ry="38" fill="url(#blue)" filter="url(#drop)" transform="rotate(25 110 65)"/>
+  
+  <!-- Auriculaire gauche -->
+  <ellipse cx="125" cy="82" rx="9" ry="32" fill="url(#blue)" filter="url(#drop)" transform="rotate(35 125 82)"/>
+
+  <!-- MAIN DROITE (CYAN) - vient de la droite-haut -->
+  <!-- Avant-bras -->
+  <path d="M 210 110 L 180 130 L 175 140 Q 170 145 160 140 L 175 120 L 190 100 Q 200 95 210 100 Z" 
+        fill="url(#cyan)" filter="url(#drop)"/>
+  
+  <!-- Paume droite -->
+  <ellipse cx="155" cy="115" rx="26" ry="32" fill="url(#cyan)" filter="url(#drop)"/>
+  
+  <!-- Pouce droit -->
+  <ellipse cx="175" cy="95" rx="12" ry="22" fill="url(#cyan)" filter="url(#drop)" transform="rotate(30 175 95)"/>
+  
+  <!-- Index droit -->
+  <ellipse cx="165" cy="70" rx="10" ry="35" fill="url(#cyan)" filter="url(#drop)" transform="rotate(20 165 70)"/>
+  
+  <!-- Majeur droit -->
+  <ellipse cx="148" cy="55" rx="11" ry="42" fill="url(#cyan)" filter="url(#drop)" transform="rotate(-5 148 55)"/>
+  
+  <!-- Annulaire droit -->
+  <ellipse cx="130" cy="65" rx="10" ry="38" fill="url(#cyan)" filter="url(#drop)" transform="rotate(-25 130 65)"/>
+  
+  <!-- Auriculaire droit -->
+  <ellipse cx="115" cy="82" rx="9" ry="32" fill="url(#cyan)" filter="url(#drop)" transform="rotate(-35 115 82)"/>
+
+  <!-- Zone de contact (où les mains se serrent) -->
+  <ellipse cx="120" cy="120" rx="24" ry="28" fill="white" opacity="0.7" filter="url(#drop)"/>
+  <path d="M 100 115 Q 120 110 140 120" stroke="url(#blue)" stroke-width="1.5" fill="none" opacity="0.3"/>
+  <path d="M 140 125 Q 120 130 100 120" stroke="url(#cyan)" stroke-width="1.5" fill="none" opacity="0.3"/>
+</svg>

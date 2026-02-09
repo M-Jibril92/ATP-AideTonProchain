@@ -25,40 +25,40 @@ export default function NavBar() {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   const navLinkStyle = ({ isActive }) => ({
-    padding: '0.5rem 1rem',
+    padding: '0.65rem 1.35rem',
     textDecoration: 'none',
-    color: isActive ? 'white' : '#cbd5e1',
+    color: isActive ? 'white' : '#7f8c8d',
     fontWeight: isActive ? '700' : '600',
     fontSize: '0.95rem',
-    borderRadius: '10px',
-    transition: 'all 0.3s ease',
-    background: isActive ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'transparent',
-    boxShadow: isActive ? '0 4px 12px rgba(99,102,241,0.4)' : 'none',
+    borderRadius: '14px',
+    transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+    background: isActive ? 'linear-gradient(135deg, #1e3a5f 0%, #2d5a8a 100%)' : 'transparent',
+    boxShadow: isActive ? '0 6px 16px rgba(30, 58, 95, 0.2)' : 'none',
     display: 'block',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    transform: isActive ? 'translateY(-2px)' : 'translateY(0)',
   });
 
   return (
     <>
       <style>{`
         .navbar {
-          background: rgba(15, 23, 42, 0.95);
-          backdrop-filter: blur(12px);
-          box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+          background: #ffffff;
+          box-shadow: 0 4px 12px rgba(31, 58, 95, 0.06);
           position: sticky;
           top: 0;
           z-index: 1000;
-          transition: all 0.3s ease;
-          border-bottom: 2px solid transparent;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          border-bottom: 1px solid #e0e4e8;
+          backdrop-filter: blur(10px);
         }
         .navbar.scrolled {
-          box-shadow: 0 8px 30px rgba(0,0,0,0.7);
-          border-bottom-color: rgba(99,102,241,0.2);
+          box-shadow: 0 8px 20px rgba(31, 58, 95, 0.1);
         }
         .nav-container {
           max-width: 1400px;
           margin: 0 auto;
-          padding: 0.75rem 2rem;
+          padding: 1rem 2rem;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -67,24 +67,30 @@ export default function NavBar() {
         .logo-section {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 1rem;
           text-decoration: none;
-          transition: all 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .logo-icon {
-          font-size: 2rem;
-          transition: all 0.4s ease;
-          filter: drop-shadow(0 4px 8px rgba(99,102,241,0.3));
+          height: 55px;
+          width: auto;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          filter: drop-shadow(0 3px 6px rgba(31, 58, 95, 0.1));
         }
-        .logo-section:hover .logo-icon { transform: scale(1.1) rotate(5deg); }
+        .logo-section:hover .logo-icon { 
+          transform: scale(1.1) rotate(3deg); 
+          filter: drop-shadow(0 6px 12px rgba(0, 168, 181, 0.2)); 
+        }
         .logo-text {
-          font-size: 1.35rem;
-          font-weight: 800;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          letter-spacing: -0.02em;
+          font-size: 1.4rem;
+          font-weight: 700;
+          color: #1e3a5f;
+          letter-spacing: -0.01em;
           margin: 0;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .logo-section:hover .logo-text {
+          letter-spacing: 0.03em;
         }
         .nav-links {
           display: flex;
@@ -94,32 +100,43 @@ export default function NavBar() {
           margin: 0;
           padding: 0;
         }
+        .nav-link {
+          color: #7f8c8d;
+        }
         .nav-link:hover:not(.active) {
-          background: rgba(99,102,241,0.08);
-          color: #6366f1;
+          background: rgba(30, 58, 95, 0.08);
+          color: #1e3a5f;
+          transform: translateY(-2px);
         }
         .nav-actions {
           display: flex;
-          gap: 0.75rem;
+          gap: 1rem;
           align-items: center;
         }
         .cart-badge {
-          background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+          background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8a 100%);
           color: white;
-          padding: 0.5rem 1rem;
-          border-radius: 10px;
-          font-weight: 700;
+          padding: 0.65rem 1.3rem;
+          border-radius: 12px;
+          font-weight: 600;
           font-size: 0.9rem;
-          box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+          box-shadow: 0 6px 16px rgba(30, 58, 95, 0.15);
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          transition: all 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .cart-badge:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99,102,241,0.5); }
+        .cart-badge:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 24px rgba(30, 58, 95, 0.25);
+        }
+          transition: all 0.3s ease;
+          text-decoration: none;
+        }
+        .cart-badge:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(30, 58, 95, 0.3); }
         .cart-count {
           background: white;
-          color: #667eea;
+          color: #1e3a5f;
           border-radius: 50%;
           width: 20px;
           height: 20px;
@@ -127,59 +144,70 @@ export default function NavBar() {
           align-items: center;
           justify-content: center;
           font-size: 0.7rem;
-          font-weight: 800;
+          font-weight: 700;
           animation: ${totalItems>0?'pulse 0.5s ease':'none'};
         }
         .user-section {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          padding: 0.5rem 1rem;
-          background: #1f2937;
+          gap: 0.5rem;
+          padding: 0.4rem 0.8rem;
+          background: #f5f7fa;
           border-radius: 50px;
-          border: 2px solid rgba(99,102,241,0.2);
+          border: 1px solid #e0e4e8;
         }
         .user-avatar {
-          width: 35px;
-          height: 35px;
+          width: 30px;
+          height: 30px;
           border-radius: 50%;
-          background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+          background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8a 100%);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 1rem;
+          font-size: 0.8rem;
           color: white;
           font-weight: 700;
+          flex-shrink: 0;
         }
-        .user-name { font-weight: 600; color: #cbd5e1; font-size: 0.9rem; }
+        .user-name { 
+          font-weight: 500; 
+          color: #2c3e50; 
+          font-size: 0.65rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 60px;
+        }
         .btn-logout {
-          padding: 0.4rem 0.8rem;
-          background: linear-gradient(135deg,#ef4444 0%,#dc2626 100%);
+          padding: 0.25rem 0.5rem;
+          background: #dc2626;
           color: white;
           border: none;
-          border-radius: 8px;
-          font-weight: 700;
+          border-radius: 4px;
+          font-weight: 600;
+          font-size: 0.65rem;
           cursor: pointer;
           transition: all 0.3s ease;
+          flex-shrink: 0;
         }
-        .btn-logout:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(239,68,68,0.4); }
+        .btn-logout:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
         .mobile-menu-btn {
           display: none;
           background: none;
           border: none;
           font-size: 1.8rem;
           cursor: pointer;
-          color: #cbd5e1;
+          color: #7f8c8d;
           padding: 0.5rem;
         }
-        .mobile-menu-btn:hover { color: #6366f1; transform: scale(1.1); }
+        .mobile-menu-btn:hover { color: #1e3a5f; transform: scale(1.1); }
         @keyframes pulse {0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
         @keyframes slideDown {from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
         @media (max-width:768px) {
           .mobile-menu-btn { display:block; }
           .nav-links {
             position: fixed; top:70px; left:0; right:0;
-            background:#0f172a;
+            background:#ffffff;
             flex-direction:column;
             padding:2rem;
             max-height:calc(100vh-70px);
@@ -187,10 +215,11 @@ export default function NavBar() {
             transform:translateX(-100%);
             transition: transform 0.3s ease;
             z-index:999;
+            box-shadow: 0 8px 30px rgba(31, 58, 95, 0.15);
           }
           .nav-links.open { transform:translateX(0); animation:slideDown 0.3s ease; }
-          .nav-links a { width:100%; text-align:center; padding:1rem !important; }
-          .nav-actions { position:fixed; bottom:0; left:0; right:0; background:#0f172a; flex-direction:column; padding:1.5rem; transform:translateY(100%); transition: transform 0.3s ease; z-index:1001; }
+          .nav-links a { width:100%; text-align:center; padding:1rem !important; color: #7f8c8d !important; }
+          .nav-actions { position:fixed; bottom:0; left:0; right:0; background:#ffffff; flex-direction:column; padding:1.5rem; transform:translateY(100%); transition: transform 0.3s ease; z-index:1001; box-shadow: 0 -4px 12px rgba(31, 58, 95, 0.1); }
           .nav-actions.open { transform:translateY(0); }
           .cart-badge,.user-section{width:100%;justify-content:center;}
           .btn-logout{width:100%;}
@@ -200,15 +229,15 @@ export default function NavBar() {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
           <a href="/" className="logo-section" onClick={closeMobileMenu}>
-            <span className="logo-icon">🤝</span>
-            <h2 className="logo-text">Aide Ton Prochain</h2>
+            <img src="/logo-icon.svg" alt="ATP Logo" className="logo-icon"/>
+            <h2 className="logo-text">A.T.P</h2>
           </a>
 
           <ul className={`nav-links ${isMobileMenuOpen?'open':''}`}>
-            {['/','/tasks','/providers','/about','/contact'].map((path,i)=>(
+            {['/','/tasks','/providers','/about','/contact','/custom-tasks'].map((path,i)=>(
               <li key={i}>
                 <NavLink to={path} style={navLinkStyle} onClick={closeMobileMenu}>
-                  {['🏠 Accueil','📋 Tâches','👥 Prestataires','ℹ️ À propos','📧 Contact'][i]}
+                  {['🏠 Accueil','📋 Tâches','👥 Prestataires','ℹ️ À propos','📧 Contact','💼 Personnalisée'][i]}
                 </NavLink>
               </li>
             ))}
@@ -221,14 +250,13 @@ export default function NavBar() {
 
             {user ? (
   <div className="user-section">
-    {/* Correction : On utilise firstName qui vient de la base de données */}
     <div className="user-avatar">
       {(user.firstName || user.email).charAt(0).toUpperCase()}
     </div>
     <span className="user-name">
-      {user.firstName} {user.lastName}
+      {user.firstName}
     </span>
-    <button onClick={handleLogout} className="btn-logout">🚪 Déconnexion</button>
+    <button onClick={handleLogout} className="btn-logout">🚪</button>
   </div>
 ) : (
               <NavLink 
@@ -242,6 +270,7 @@ export default function NavBar() {
                 🔐 Connexion
               </NavLink>
             )}
+            {!user && (
             <NavLink 
                   to="/register"
                   style={{
@@ -258,6 +287,7 @@ export default function NavBar() {
                 >
                   📝 S'inscrire
                 </NavLink>
+            )}
           </div>
 
           <button className="mobile-menu-btn" onClick={()=>setIsMobileMenuOpen(!isMobileMenuOpen)}>

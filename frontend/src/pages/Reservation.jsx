@@ -1,9 +1,10 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 
 export default function Reservation() {
   const { state } = useLocation();
+  const navigate = useNavigate();
   const selectedSlot = state?.selectedSlot; // Créneau sélectionné depuis SelectTime
   const { items, removeItem, updateQty, clear } = useCart();
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
@@ -136,7 +137,7 @@ export default function Reservation() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
             <button 
-              onClick={() => { alert('Procéder au paiement (fonctionnalité à venir)'); }}
+              onClick={() => navigate('/payment')}
               className="btn btn-primary"
               style={{ width: '100%', justifyContent: 'center', padding: '1rem' }}
             >

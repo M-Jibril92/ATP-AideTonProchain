@@ -1,0 +1,63 @@
+<svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a5f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d5a8a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00a8b5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#20c5d6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="softBlur">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.4"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+  
+  <!-- Arrière-plan dégradé doux -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ecf0f1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bgGrad)" rx="24"/>
+  
+  <!-- Lueurs décoratives -->
+  <circle cx="100" cy="100" r="80" fill="url(#grad1)" opacity="0.05" filter="url(#glow)"/>
+  <circle cx="500" cy="100" r="80" fill="url(#grad2)" opacity="0.05" filter="url(#glow)"/>
+  
+  <!-- Main gauche (bleu) - formes arrondies organiques -->
+  <path d="M 180 240 Q 160 220 165 190 Q 170 160 195 155 Q 220 150 230 170 Q 235 185 235 200 L 235 230 Q 230 250 210 255 Q 190 258 180 240 Z" 
+        fill="url(#grad1)" opacity="0.98" filter="url(#softBlur)"/>
+  
+  <!-- Main droite (cyan) - formes arrondies organiques -->
+  <path d="M 420 240 Q 440 220 435 190 Q 430 160 405 155 Q 380 150 370 170 Q 365 185 365 200 L 365 230 Q 370 250 390 255 Q 410 258 420 240 Z" 
+        fill="url(#grad2)" opacity="0.98" filter="url(#softBlur)"/>
+  
+  <!-- Zone de contact fluide -->
+  <circle cx="300" cy="200" r="12" fill="#ffffff" opacity="0.5" filter="url(#softBlur)"/>
+  <circle cx="300" cy="200" r="7" fill="#ffffff" opacity="0.8"/>
+  
+  <!-- Petits accents décoratifs -->
+  <circle cx="190" cy="170" r="3.5" fill="url(#grad1)" opacity="0.4" filter="url(#softBlur)"/>
+  <circle cx="410" cy="170" r="3.5" fill="url(#grad2)" opacity="0.4" filter="url(#softBlur)"/>
+  
+  <!-- Texte A.T.P avec ombre douce -->
+  <text x="300" y="330" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" 
+        font-size="68" font-weight="700" text-anchor="middle" fill="#1e3a5f" letter-spacing="6"
+        style="filter: drop-shadow(0 2px 4px rgba(30, 58, 95, 0.15))">A.T.P</text>
+  
+  <!-- Sous-titre avec style -->
+  <text x="300" y="372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" 
+        font-size="20" font-weight="600" text-anchor="middle" fill="#00a8b5" letter-spacing="3"
+        style="filter: drop-shadow(0 1px 2px rgba(0, 168, 181, 0.1))">AIDE TON PROCHAIN</text>
+  
+  <!-- Ligne décorative sous le logo -->
+  <line x1="250" y1="290" x2="350" y2="290" stroke="url(#grad2)" stroke-width="2" opacity="0.3" stroke-linecap="round"/>
+</svg>

@@ -11,6 +11,8 @@ import Contact from './pages/Contact';
 import Reservation from './pages/Reservation';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import CustomTasks from './pages/CustomTasks';
+import Payment from './pages/Payment';
 
 // Nouvelle page
 import SelectTime from './pages/SelectTime';
@@ -30,6 +32,7 @@ export default function App() {
           <Route path="/providers" element={<Providers />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/custom-tasks" element={<CustomTasks />} />
 
           {/* Nouvelle étape : choix du créneau horaire */}
           <Route path="/select-time" element={<SelectTime />} />
@@ -40,6 +43,16 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Reservation />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Page de paiement protégée */}
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute>
+                <Payment />
               </ProtectedRoute>
             }
           />
