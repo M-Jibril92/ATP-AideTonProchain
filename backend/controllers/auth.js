@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { validateRegister, validators } = require('../utils/validators');
 
 // --- INSCRIPTION ---
 exports.register = async (req, res) => {
@@ -8,17 +9,23 @@ exports.register = async (req, res) => {
         // 1. Récupérer les infos
         const { firstName, lastName, email, password, role, phone, bio, location } = req.body;
 
-        // 2. Vérifier si l'email existe déjà
+        // 2. Valider les données
+        const validationErrors = validateRegister({ firstName, lastName, email, password, role });
+        if (validationErrors) {
+            return res.status(400).json({ message: 'Données invalides', errors: validationErrors });
+        }
+
+        // 3. Vérifier si l'email existe déjà
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ message: 'Cet email est déjà utilisé.' });
         }
 
-        // 3. Hacher le mot de passe (Sécurité)
+        // 4. Hacher le mot de passe (Sécurité)
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // 4. Créer l'utilisateur dans la BDD
+        // 5. Créer l'utilisateur dans la BDD
         const newUser = await User.create({
             firstName,
             lastName,
