@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import logoATP from '../assets/logo-atp.png';
 
 export default function NavBar() {
   const { totalItems } = useCart();
@@ -152,7 +153,6 @@ export default function NavBar() {
           align-items: center;
           gap: 0.5rem;
           padding: 0.4rem 0.8rem;
-          background: #f5f7fa;
           border-radius: 50px;
           border: 1px solid #e0e4e8;
         }
@@ -185,7 +185,7 @@ export default function NavBar() {
           border: none;
           border-radius: 4px;
           font-weight: 600;
-          font-size: 0.65rem;
+                  🛒 Panier <span className="cart-count">{totalItems}</span>
           cursor: pointer;
           transition: all 0.3s ease;
           flex-shrink: 0;
@@ -229,18 +229,27 @@ export default function NavBar() {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
           <a href="/" className="logo-section" onClick={closeMobileMenu}>
-            <img src="/logo-icon.svg" alt="ATP Logo" className="logo-icon"/>
-            <h2 className="logo-text">A.T.P</h2>
+            <img src={logoATP} alt="Logo ATP" className="logo-icon" />
+            <span className="logo-text">A.T.P</span>
           </a>
 
           <ul className={`nav-links ${isMobileMenuOpen?'open':''}`}>
-            {['/','/tasks','/providers','/about','/contact','/custom-tasks'].map((path,i)=>(
+            {/* Liens publics */}
+            {['/','/tasks','/providers','/about','/contact'].map((path,i)=>(
               <li key={i}>
                 <NavLink to={path} style={navLinkStyle} onClick={closeMobileMenu}>
-                  {['🏠 Accueil','📋 Tâches','👥 Prestataires','ℹ️ À propos','📧 Contact','💼 Personnalisée'][i]}
+                  {['🏠 Accueil','📋 Tâches','👥 Prestataires','ℹ️ À propos','📧 Contact'][i]}
                 </NavLink>
               </li>
             ))}
+            {/* Lien admin visible uniquement pour ADMIN */}
+            {user && user.role === 'ADMIN' && (
+              <li>
+                <NavLink to="/admin/orders" style={navLinkStyle} onClick={closeMobileMenu}>
+                  🛠️ Admin
+                </NavLink>
+              </li>
+            )}
           </ul>
 
           <div className={`nav-actions ${isMobileMenuOpen?'open':''}`}>
@@ -259,34 +268,44 @@ export default function NavBar() {
     <button onClick={handleLogout} className="btn-logout">🚪</button>
   </div>
 ) : (
-              <NavLink 
-                to="/login"
-                style={{
-                  padding:'0.5rem 1rem', background:'linear-gradient(135deg,#10b981 0%,#059669 100%)',
-                  color:'white', borderRadius:'10px', fontWeight:700, display:'flex', alignItems:'center', gap:'0.5rem'
-                }}
-                onClick={closeMobileMenu}
-              >
-                🔐 Connexion
-              </NavLink>
-            )}
-            {!user && (
-            <NavLink 
-                  to="/register"
+                <NavLink 
+                  to="/login"
                   style={{
-                    padding:'0.5rem 1rem', 
-                    background:'linear-gradient(135deg,#10b981 0%,#059669 100%)',
-                    color:'white', 
-                    borderRadius:'10px', 
-                    fontWeight:700, 
-                    display:'flex', 
-                    alignItems:'center',
-                    textDecoration: 'none'
+                    padding:'0.35rem 0.9rem',
+                    background:'#003366',
+                    color:'white',
+                    borderRadius:'6px',
+                    fontWeight:600,
+                        fontSize:'0.74rem',
+                        border:'0.5px solid #b6d4e7',
+                    boxShadow:'0 2px 8px #b6d4e7',
+                    display:'flex', alignItems:'center', gap:'0.5rem',
+                    transition:'all 0.3s',
                   }}
                   onClick={closeMobileMenu}
                 >
-                  📝 S'inscrire
+                  🔐 Connexion
                 </NavLink>
+            )}
+            {!user && (
+              <NavLink 
+                to="/register"
+                style={{
+                  padding:'0.35rem 0.9rem',
+                  background:'#003366',
+                  color:'white',
+                  borderRadius:'6px',
+                  fontWeight:600,
+                  fontSize:'0.74rem',
+                  border:'0.5px solid #b6d4e7',
+                  boxShadow:'0 2px 8px #b6d4e7',
+                  display:'flex', alignItems:'center', gap:'0.5rem',
+                  transition:'all 0.3s',
+                }}
+                onClick={closeMobileMenu}
+              >
+                📝 Inscription
+              </NavLink>
             )}
           </div>
 
@@ -308,7 +327,7 @@ export default function NavBar() {
             background:'rgba(0,0,0,0.5)',
             zIndex:998
           }}
-        />
+        ></div>
       )}
     </>
   );

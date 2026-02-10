@@ -1,50 +1,54 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
 
-const AuthContext = createContext();
+import React, { useState } from 'react';
+import { authAPI } from '../services/api';
+import { AuthContext } from './AuthContext';
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    const stored = sessionStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
+  const [loading, setLoading] = useState(false);
 
-  // Au chargement, on vérifie si un token existe déjà
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
-    
-    if (token && savedUser) {
-      setUser(JSON.parse(savedUser));
+  // Inscription
+  const register = async (formData) => {
+    setLoading(true);
+    try {
+      const response = await authAPI.register(formData);
+      setLoading(false);
+      return response;
+    } catch (err) {
+      setLoading(false);
+      throw err;
     }
-    setLoading(false);
-  }, []);
+  };
 
-  // --- FONCTION DE CONNEXION ---
+  // Connexion
   const login = async (email, password) => {
-    const data = await authAPI.login(email, password);
-
-    // Sauvegarde locale
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    setUser(data.user);
+    setLoading(true);
+    try {
+      const response = await authAPI.login(email, password);
+      setUser(response.user);
+      sessionStorage.setItem('user', JSON.stringify(response.user));
+      setLoading(false);
+      return response;
+    } catch (err) {
+      setLoading(false);
+      throw err;
+    }
   };
 
-  // --- FONCTION D'INSCRIPTION ---
-  const register = async (userData) => {
-    const data = await authAPI.register(userData);
-    return data;
-  };
-
-  // --- DÉCONNEXION ---
+  // Déconnexion
   const logout = () => {
-    authAPI.logout();
     setUser(null);
+    sessionStorage.removeItem('user');
+    // On peut aussi nettoyer les tokens ici
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
+      {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext);

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../contexts/CartContext';
 
 const DEFAULT_MISSIONS = [
   { id: 1, title: 'Aide au ménage', description: 'Service de nettoyage professionnel', category: 'Ménage', price: 30, duration: '2h', icon: '🧹' },
@@ -19,7 +18,6 @@ const DEFAULT_MISSIONS = [
 
 export default function Tasks() {
   const navigate = useNavigate();
-  const { addItem } = useCart();
   const [missions, setMissions] = useState(DEFAULT_MISSIONS);
   const [customTasks, setCustomTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,10 +59,12 @@ export default function Tasks() {
   }, []);
 
   // Gestion des catégories dynamiques
-  const categories = ['Tous', ...new Set(missions.map(m => m.category || 'Autre'))];
+  const categories = ['Tous', 'Personnalisées', ...new Set(missions.map(m => m.category || 'Autre'))];
 
   const filteredMissions = filter === 'Tous' 
     ? missions
+    : filter === 'Personnalisées'
+    ? customTasks
     : missions.filter(m => m.category === filter);
 
   const handleAddCustomTask = () => {
@@ -77,24 +77,31 @@ export default function Tasks() {
       id: 'custom-' + Date.now(),
       title: customTaskName,
       description: customTaskDescription,
-      category: 'Personnalisée',
+      category: 'Personnalisées',
       sector: customTaskSector,
       price: 25,
       duration: 'À convenir',
-      icon: '💼'
+      icon: '💼',
+      isCustom: true
     };
 
-    // Ajouter directement au panier
-    addItem(newTask, 1);
+    const updated = [...customTasks, newTask];
+    setCustomTasks(updated);
+    localStorage.setItem('customTasks', JSON.stringify(updated));
     
     setCustomTaskName('');
     setCustomTaskDescription('');
     setCustomTaskSector('');
     setShowCustomTaskForm(false);
-    
-    // Confirmation et redirection
-    alert('✅ Tâche ajoutée au panier!');
-    navigate('/reservation');
+
+    // Naviguer directement vers la sélection du créneau horaire
+    navigate('/select-time', { state: { mission: newTask } });
+  };
+
+  const handleDeleteCustomTask = (taskId) => {
+    const updated = customTasks.filter(t => t.id !== taskId);
+    setCustomTasks(updated);
+    localStorage.setItem('customTasks', JSON.stringify(updated));
   };
 
   if (loading) return <div style={{textAlign: 'center', marginTop: '50px'}}>Chargement des missions...</div>;
@@ -256,44 +263,58 @@ export default function Tasks() {
 
       {/* Grille des Missions */}
       <div className="card-grid">
-        {filteredMissions.map((m) => {
-          const isCustom = String(m.id).startsWith('custom-');
-          return (
-            <div key={m.id} className="card" style={{display: 'flex', flexDirection: 'column', borderLeft: isCustom ? '4px solid #00a8b5' : 'none'}}>
-              <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>
-                {m.icon || '🛠️'}
-              </div>
-              <h3>{m.title}</h3>
-              {m.description && (
-                <p style={{color: '#666', flex: 1, fontSize: isCustom ? '0.95rem' : '1rem'}}>
-                  {m.description}
-                </p>
-              )}
-
-              <div style={{display: 'flex', justifyContent: 'space-between', margin: '1rem 0', fontWeight: 'bold'}}>
-                <span>
-                  {m.duration && `⏱️ ${m.duration}`}
-                  {m.sector && !m.duration && `🏢 ${m.sector}`}
-                </span>
-                <span style={{color: 'var(--primary)'}}>💰 {m.price}€</span>
-              </div>
-
-              <button 
-                onClick={() => {
-                  if (isCustom) {
-                    alert(`Tâche personnalisée: ${m.title}\n${m.description}\n\nSecteur: ${m.sector || '—'}\nPrix: ${m.price}€`);
-                  } else {
-                    navigate('/select-time', { state: { mission: m } });
-                  }
-                }}
-                className="btn btn-primary"
-                style={{ width: '100%' }}
-              >
-                {isCustom ? '👁️ Voir détails' : '📅 Réserver'}
-              </button>
+        {filteredMissions.map((m) => (
+          <div key={m.id} className="card" style={{display: 'flex', flexDirection: 'column', borderLeft: m.isCustom ? '4px solid #00a8b5' : 'none'}}>
+            <div style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '1rem' }}>
+              {m.icon || '🛠️'}
             </div>
-          );
-        })}
+            <h3>{m.title}</h3>
+            {m.description && (
+              <p style={{color: '#666', flex: 1, fontSize: m.isCustom ? '0.95rem' : '1rem'}}>
+                {m.description}
+              </p>
+            )}
+            
+            <div style={{display: 'flex', justifyContent: 'space-between', margin: '1rem 0', fontWeight: 'bold'}}>
+              <span>
+                {m.duration && `⏱️ ${m.duration}`}
+                {m.sector && !m.duration && `🏢 ${m.sector}`}
+              </span>
+              <span style={{color: 'var(--primary)'}}>💰 {m.price}€</span>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%' }}>
+              <button 
+                onClick={() => navigate('/select-time', { state: { mission: m } })}
+                className="btn btn-primary"
+                style={{ flex: 1 }}
+              >
+                📅 Réserver
+              </button>
+              {m.isCustom && (
+                <button 
+                  onClick={() => {
+                    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) {
+                      handleDeleteCustomTask(m.id);
+                    }
+                  }}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    background: '#ff6b6b',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  🗑️
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
 
       {filteredMissions.length === 0 && (

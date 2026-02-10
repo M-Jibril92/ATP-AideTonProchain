@@ -10,26 +10,44 @@ export default function Register() {
     password: ''
   });
   const [error, setError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+    // Validation du mot de passe côté frontend
+    const validatePassword = (password) => {
+      if (password.length < 8) return 'Au moins 8 caractères';
+      if (!/[A-Z]/.test(password)) return 'Au moins une majuscule';
+      if (!/[a-z]/.test(password)) return 'Au moins une minuscule';
+      if (!/\d/.test(password)) return 'Au moins un chiffre';
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return 'Au moins un caractère spécial';
+      return '';
+    };
   
   const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (e.target.name === 'password') {
+      setPasswordError(validatePassword(e.target.value));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
     try {
       // On envoie les données au Backend
       await register(formData);
       // Si ça marche, on redirige vers la page de connexion
-      navigate('/login'); 
+      navigate('/login');
       alert("Compte créé avec succès ! Connectez-vous maintenant.");
     } catch (err) {
-      setError(err.message);
+      // Afficher les erreurs détaillées
+      if (err.errors) {
+        // Affiche chaque erreur de validation
+        setError(Object.values(err.errors).join(' | '));
+      } else {
+        setError(err.message);
+      }
     }
   };
 
@@ -81,6 +99,16 @@ export default function Register() {
               required className="form-control" 
               style={{width: '100%', padding: '10px'}}
             />
+            {formData.password && passwordError && (
+              <div style={{color: 'orange', fontSize: '0.9rem', marginTop: '0.5rem'}}>
+                {passwordError}
+              </div>
+            )}
+            {formData.password && !passwordError && (
+              <div style={{color: 'green', fontSize: '0.9rem', marginTop: '0.5rem'}}>
+                Mot de passe sécurisé
+              </div>
+            )}
           </div>
 
           <button type="submit" className="btn btn-primary" style={{marginTop: '1rem'}}>

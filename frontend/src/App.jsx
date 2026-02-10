@@ -1,3 +1,4 @@
+import AdminOrders from './pages/AdminOrders';
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
@@ -13,6 +14,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import CustomTasks from './pages/CustomTasks';
 import Payment from './pages/Payment';
+
+// Import de la page d'activation
+import Activate from './pages/Activate';
 
 // Nouvelle page
 import SelectTime from './pages/SelectTime';
@@ -58,6 +62,19 @@ export default function App() {
           />
 
           <Route path="/login" element={<Login />} />
+
+          {/* Route d'activation */}
+          <Route path="/activate" element={<Activate />} />
+
+          {/* Espace admin : commandes passées */}
+          <Route
+            path="/admin/orders"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminOrders />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Route fallback */}
           <Route path="*" element={<div>Page non trouvée</div>} />

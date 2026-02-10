@@ -1,0 +1,8 @@
+// Placez ce fichier dans frontend/src/assets/logo-atp.png
+// (Vous pouvez glisser-déposer le logo dans ce dossier ou utiliser le chemin ci-dessous)
+
+// Utilisation dans Providers.jsx :
+// import logoATP from '../assets/logo-atp.png';
+// <img src={logoATP} ... />
+
+// Si le logo est déjà dans le dossier assets, passez à l'étape suivante.

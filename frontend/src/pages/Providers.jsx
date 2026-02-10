@@ -1,4 +1,5 @@
 import React from 'react';
+import logoATP from '../assets/logo-atp.png';
 
 const PROVIDERS = [
   { id: 'p1', name: 'Mohamed-Jibril', skills: 'Souriant et motivé je souhaite aider le plus de personnes ', rating: 5.0, avatar: '👨‍🌾', experience: 'CEO & Président', missions: 0 },
@@ -11,36 +12,40 @@ const PROVIDERS = [
 export default function Providers() {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Header */}
+      {/* Header avec logo */}
       <div style={{
         marginBottom: '3rem',
-        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(106, 17, 203, 0.1) 100%)',
-        padding: '3rem 2rem',
+        background: 'linear-gradient(135deg, #e6f4f1 0%, #f0f6ff 100%)',
+        padding: '2.5rem 2rem 2rem 2rem',
         borderRadius: '20px',
-        border: '1px solid rgba(99, 102, 241, 0.2)',
+        border: '1px solid #b6d4e7',
         textAlign: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '2rem',
         backdropFilter: 'blur(10px)'
       }}>
-        <h1 style={{
-          fontSize: '2.5rem',
-          fontWeight: '800',
-          background: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          marginBottom: '1rem',
-          letterSpacing: '-0.02em'
-        }}>
-          Nos prestataires
-        </h1>
-        <p style={{
-          fontSize: '1.1rem',
-          color: '#cbd5e1',
-          lineHeight: '1.8',
-          maxWidth: '700px',
-          margin: '0 auto'
-        }}>
-          Des voisins de confiance, vérifiés et notés par la communauté
-        </p>
+        <img src={logoATP} alt="Logo ATP" style={{ height: 70, marginRight: 24, borderRadius: 12, boxShadow: '0 2px 8px #b6d4e7' }} />
+        <div style={{ flex: 1 }}>
+          <h1 style={{
+            fontSize: '2.5rem',
+            fontWeight: '800',
+            color: '#003366',
+            marginBottom: '1rem',
+            letterSpacing: '-0.02em'
+          }}>
+            Nos prestataires
+          </h1>
+          <p style={{
+            fontSize: '1.1rem',
+            color: '#1e293b',
+            lineHeight: '1.8',
+            maxWidth: '700px',
+            margin: '0 auto'
+          }}>
+            Des voisins de confiance, vérifiés et notés par la communauté
+          </p>
+        </div>
       </div>
 
       {/* Providers Grid */}
@@ -56,9 +61,9 @@ export default function Providers() {
             style={{
               padding: '2rem',
               borderRadius: '16px',
-              background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%)',
-              border: '1px solid rgba(99, 102, 241, 0.3)',
-              backdropFilter: 'blur(10px)',
+              background: 'linear-gradient(135deg, #e6f4f1 0%, #f0f6ff 100%)',
+              border: '1px solid #b6d4e7',
+              boxShadow: '0 8px 24px #b6d4e7',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               display: 'flex',
               flexDirection: 'column',
@@ -69,13 +74,13 @@ export default function Providers() {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-8px)';
-              e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-              e.currentTarget.style.boxShadow = '0 12px 32px rgba(99, 102, 241, 0.2)';
+              e.currentTarget.style.borderColor = '#003366';
+              e.currentTarget.style.boxShadow = '0 12px 32px #b6d4e7';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.3)';
-              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = '#b6d4e7';
+              e.currentTarget.style.boxShadow = '0 8px 24px #b6d4e7';
             }}
           >
             {/* Header with Avatar and Name */}
@@ -89,7 +94,7 @@ export default function Providers() {
             }}>
               <div style={{
                 fontSize: '3rem',
-                background: 'linear-gradient(135deg, #3b82f6, #a855f7)',
+                background: '#fff',
                 padding: '1rem',
                 borderRadius: '14px',
                 display: 'flex',
@@ -97,7 +102,7 @@ export default function Providers() {
                 justifyContent: 'center',
                 minWidth: '80px',
                 height: '80px',
-                boxShadow: '0 8px 20px rgba(99, 102, 241, 0.2)'
+                boxShadow: '0 8px 20px #b6d4e7'
               }}>
                 {p.avatar}
               </div>
@@ -107,7 +112,8 @@ export default function Providers() {
                   fontSize: '1.3rem',
                   fontWeight: '700',
                   marginBottom: '0.5rem',
-                  color: '#f9fafb'
+                  color: '#003366', // bleu foncé, très lisible
+                  textShadow: '0 1px 4px #b6d4e7', // léger contour pour contraste
                 }}>
                   {p.name}
                 </h3>

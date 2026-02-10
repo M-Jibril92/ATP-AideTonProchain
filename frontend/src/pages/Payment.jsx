@@ -1,19 +1,22 @@
+
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import AdresseAutoComplete from '../components/AdresseAutoComplete.jsx';
+import { useAuth } from '../contexts/useAuth';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
-import { paymentsAPI } from '../services/api';
-import { loadStripe } from '@stripe/stripe-js';
 
 export default function Payment() {
   const { user } = useAuth();
   const { items, clear } = useCart();
   const navigate = useNavigate();
-  const [error, setError] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('CARD');
-  const [processing, setProcessing] = useState(false);
-
   const total = items.reduce((sum, item) => sum + (item.price || 0) * item.qty, 0).toFixed(2);
+  const [address, setAddress] = useState({
+    rue: '',
+    ville: '',
+    batiment: '',
+    quartier: ''
+  });
+  const [error, setError] = useState('');
 
   if (!user) {
     return (
@@ -27,8 +30,8 @@ export default function Payment() {
   if (items.length === 0) {
     return (
       <div className="page-container">
-        <div className="card" style={{ 
-          maxWidth: '600px', 
+        <div className="card" style={{
+          maxWidth: '600px',
           margin: '4rem auto',
           textAlign: 'center',
           padding: '3rem'
@@ -38,7 +41,7 @@ export default function Payment() {
           <p style={{ color: 'var(--text-light)', marginBottom: '1.5rem' }}>
             Retournez à votre panier pour ajouter des services.
           </p>
-          <button 
+          <button
             onClick={() => navigate('/reservation')}
             className="btn btn-primary"
           >
@@ -49,65 +52,45 @@ export default function Payment() {
     );
   }
 
-  // Stripe Checkout flow
-  const handleStripeCheckout = async (e) => {
-    e.preventDefault();
+  const handleStripeCheckout = async () => {
+    setError('');
+    if (!address.rue || !address.ville) {
+      setError('Merci de renseigner au moins la rue et la ville.');
+      return;
+    }
     try {
-      setError('');
-      setProcessing(true);
-
-      // Ask backend to create a Checkout session
-      const host = window.location.origin;
-      const session = await paymentsAPI.createCheckoutSession({
-        items: items.map(i => ({ id: i.id, title: i.title, quantity: i.qty, amount: i.price })) ,
-        successUrl: `${host}/payment-success`,
-        cancelUrl: `${host}/payment-cancel`
+      const response = await fetch('http://localhost:5000/api/payments/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: items.map(item => ({
+            name: item.title,
+            quantity: item.qty,
+            price: Math.round((item.price || 0) * 100),
+          })),
+          userId: user.id,
+          email: user.email,
+          address
+        })
       });
-
-      // If backend returned a full URL, redirect there
-      if (session.url) {
-        window.location.href = session.url;
-        return;
-      }
-
-      // Otherwise expect { id } and redirect using Stripe.js
-      const stripePk = import.meta.env.VITE_STRIPE_PK;
-      if (!stripePk) throw new Error('VITE_STRIPE_PK non défini dans .env');
-      const stripe = await loadStripe(stripePk);
-      const result = await stripe.redirectToCheckout({ sessionId: session.id });
-      if (result.error) setError(result.error.message);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Erreur lors de la création de la session Stripe');
+      window.location.href = data.url;
     } catch (err) {
       setError(err.message);
-    } finally {
-      setProcessing(false);
     }
   };
 
-  // Fallback: server-side record creation (existing behavior)
-  const handlePayment = async (e) => {
-    e.preventDefault();
-    try {
-      setError('');
-      setProcessing(true);
-
-      for (const item of items) {
-        await paymentsAPI.create({
-          serviceId: item.id,
-          amount: (item.price || 0) * item.qty,
-          paymentMethod,
-          description: item.title,
-          quantity: item.qty
-        });
-      }
-
-      clear();
-      alert('✅ Paiement enregistré (mode démo).');
-      navigate('/reservation');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setProcessing(false);
+  const handleCashPayment = async () => {
+    setError('');
+    if (!address.rue || !address.ville) {
+      setError('Merci de renseigner au moins la rue et la ville.');
+      return;
     }
+    // Ici tu peux envoyer la commande au backend (à adapter si tu veux stocker les paiements espèces)
+    alert('Commande validée pour paiement en espèce sur place !');
+    clear();
+    navigate('/tasks');
   };
 
   return (
@@ -115,21 +98,18 @@ export default function Payment() {
       <div className="page-header">
         <h1 className="page-title">Finaliser le paiement</h1>
         <p className="page-subtitle">
-          Confirmez votre commande et choisissez votre méthode de paiement
+          Confirmez votre commande et payez en toute sécurité via Stripe
         </p>
       </div>
 
-      <div style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-        
-        {/* Récapitulatif */}
-        <div className="card" style={{ animation: 'slideUp 0.3s ease' }}>
+      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <div className="card" style={{ animation: 'slideUp 0.3s ease', marginBottom: '2rem' }}>
           <h2 style={{ marginBottom: '1.5rem' }}>📦 Récapitulatif de commande</h2>
-          
           <div style={{ display: 'grid', gap: '1rem' }}>
             {items.map((item, index) => (
-              <div 
+              <div
                 key={item.id}
-                style={{ 
+                style={{
                   padding: '1rem',
                   backgroundColor: '#f5f5f5',
                   borderRadius: '8px',
@@ -144,94 +124,62 @@ export default function Payment() {
                     </p>
                   </div>
                   <div style={{ textAlign: 'right', fontWeight: '600' }}>
-                    ${(item.price * item.qty).toFixed(2)}
+                    {(item.price * item.qty).toFixed(2)} €
                   </div>
                 </div>
               </div>
             ))}
           </div>
-
-          <div style={{ 
-            marginTop: '1.5rem', 
-            paddingTop: '1.5rem', 
+          <div style={{
+            marginTop: '1.5rem',
+            paddingTop: '1.5rem',
             borderTop: '2px solid #ddd'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '1.1rem', fontWeight: '600' }}>Total:</span>
               <span style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--primary)' }}>
-                ${total}
+                {total} €
               </span>
             </div>
           </div>
         </div>
-
-        {/* Formulaire de paiement */}
-        <div className="card" style={{ animation: 'slideUp 0.4s ease' }}>
-          <h2 style={{ marginBottom: '1.5rem' }}>💳 Méthode de paiement</h2>
-          
-          <form onSubmit={paymentMethod === 'CARD' ? handleStripeCheckout : handlePayment} style={{ display: 'grid', gap: '1.5rem' }}>
-            
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: '600' }}>
-                Choisissez votre méthode:
-              </label>
-              <select
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                style={{ 
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '2px solid var(--border)',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  fontWeight: '500'
-                }}
-              >
-                <option value="CARD">💳 Carte Bancaire</option>
-                <option value="PAYPAL">🅿️ PayPal</option>
-                <option value="TRANSFER">🏦 Virement Bancaire</option>
-                <option value="CASH">💵 Paiement à la Livraison</option>
-              </select>
+        {/* Formulaire d'adresse */}
+        <form style={{marginBottom: '1.5rem'}} onSubmit={e => {e.preventDefault(); handleStripeCheckout();}}>
+          <h3 style={{marginBottom: '1rem'}}>Adresse de la prestation</h3>
+          <div style={{display:'flex', gap:'1rem', marginBottom:'0.7rem'}}>
+            <div style={{flex:2}}>
+              <AdresseAutoComplete value={address.rue} onChange={val=>setAddress({...address, rue: val})} />
             </div>
-
-            {error && (
-              <div style={{ 
-                padding: '1rem',
-                backgroundColor: '#fee',
-                color: '#c33',
-                borderRadius: '8px',
-                border: '1px solid #fcc'
-              }}>
-                ❌ {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={processing}
-              className="btn btn-primary"
-              style={{ 
-                width: '100%',
-                padding: '1rem',
-                fontSize: '1.1rem',
-                fontWeight: '700',
-                opacity: processing ? 0.6 : 1,
-                cursor: processing ? 'not-allowed' : 'pointer'
-              }}
-            >
-              {processing ? '⏳ Traitement...' : (paymentMethod === 'CARD' ? `🔒 Payer par carte ${total}€` : `🔒 Payer ${total}€`)}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate('/reservation')}
-              className="btn btn-outline"
-              style={{ width: '100%', padding: '0.75rem' }}
-            >
-              ← Retour au panier
-            </button>
-          </form>
-        </div>
+            <div style={{flex:1}}>
+              <input type="text" placeholder="Ville*" value={address.ville} onChange={e=>setAddress({...address, ville: e.target.value})} style={{width:'100%', padding:'0.7rem', borderRadius:6, border:'1px solid #ddd'}} required />
+            </div>
+          </div>
+          <div style={{display:'flex', gap:'1rem', marginBottom:'0.7rem'}}>
+            <input type="text" placeholder="Bâtiment / Immeuble" value={address.batiment} onChange={e=>setAddress({...address, batiment: e.target.value})} style={{flex:1, padding:'0.7rem', borderRadius:6, border:'1px solid #ddd'}} />
+          </div>
+          {error && <div style={{color:'red', marginBottom:'0.7rem'}}>{error}</div>}
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: '100%', padding: '1.2rem', fontSize: '1.2rem', fontWeight: '700', marginBottom:'0.5rem' }}
+          >
+            🔒 Payer avec Stripe
+          </button>
+        </form>
+        <button
+          onClick={handleCashPayment}
+          className="btn btn-outline"
+          style={{ width: '100%', padding: '0.9rem', fontSize: '1.05rem', fontWeight: '600', marginBottom:'0.5rem', background:'#f5f5f5', border:'1.5px dashed #003366', color:'#003366' }}
+        >
+          💶 Payer en espèce sur place
+        </button>
+        <button
+          onClick={() => navigate('/reservation')}
+          className="btn btn-outline"
+          style={{ width: '100%', padding: '0.75rem', marginTop: '1rem' }}
+        >
+          ← Retour au panier
+        </button>
       </div>
     </div>
   );
