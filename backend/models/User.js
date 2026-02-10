@@ -30,7 +30,10 @@ const User = sequelize.define('User', {
     // Ces champs serviront surtout pour les Prestataires (PROVIDER)
     phone: { type: DataTypes.STRING },
     bio: { type: DataTypes.TEXT },
-    location: { type: DataTypes.STRING }
+    location: { type: DataTypes.STRING },
+    // Validation email
+    emailToken: { type: DataTypes.STRING },
+    emailVerified: { type: DataTypes.BOOLEAN, defaultValue: false }
 });
 
 module.exports = User;

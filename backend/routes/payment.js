@@ -4,6 +4,100 @@ const { authenticateToken } = require('../middleware/auth');
 const { validatePayment } = require('../utils/validators');
 const Payment = require('../models/Payment');
 const { v4: uuidv4 } = require('uuid');
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+// GET /api/admin/orders - Liste toutes les commandes (admin)
+router.get('/admin/orders', async (req, res) => {
+  try {
+    const Payment = require('../models/Payment');
+    const User = require('../models/User');
+    const Service = require('../models/Service');
+    const orders = await Payment.findAll({
+      order: [['createdAt', 'DESC']],
+      include: [
+        { model: User, attributes: ['firstName', 'lastName', 'email', 'location'] },
+        { model: Service, attributes: ['title', 'category', 'duration'] }
+      ]
+    });
+    const result = orders.map(o => ({
+      id: o.id,
+      createdAt: o.createdAt,
+      amount: o.amount,
+      paymentMethod: o.paymentMethod,
+      description: o.description,
+      clientName: o.User ? `${o.User.firstName} ${o.User.lastName}` : o.userId,
+      email: o.User ? o.User.email : '',
+      ville: o.User ? o.User.location : '',
+      service: o.Service ? o.Service.title : '',
+      categorie: o.Service ? o.Service.category : '',
+      duree: o.Service ? o.Service.duration : ''
+    }));
+    res.json({ orders: result });
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur serveur', error: error.message });
+  }
+});
+const { sendAdminOrderEmail } = require('../utils/mailer');
+
+// POST /api/payments/create-checkout-session - Créer une session Stripe Checkout
+router.post('/create-checkout-session', async (req, res) => {
+  try {
+    const { items, email } = req.body;
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'Aucun article à payer.' });
+    }
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: items.map(item => ({
+        price_data: {
+          currency: 'eur',
+          product_data: { name: item.name },
+          unit_amount: item.price,
+        },
+        quantity: item.quantity,
+      })),
+      customer_email: email,
+      success_url: process.env.FRONTEND_URL + '/reservation?success=1',
+      cancel_url: process.env.FRONTEND_URL + '/payment?canceled=1',
+    });
+    // Notifier l'admin (commande Stripe en attente)
+    await sendAdminOrderEmail({
+      clientName: email,
+      amount: items.reduce((sum, i) => sum + (i.price * i.quantity) / 100, 0),
+      paymentMethod: 'CARD',
+      description: JSON.stringify(items, null, 2),
+      createdAt: new Date().toISOString()
+    });
+    res.json({ url: session.url });
+  } catch (error) {
+    console.error('Erreur Stripe Checkout:', error);
+    res.status(500).json({ message: 'Erreur lors de la création de la session Stripe', error: error.message });
+  }
+});
+// POST /api/payments/create-intent - Créer un PaymentIntent Stripe
+router.post('/create-intent', async (req, res) => {
+  try {
+    const { amount, userId, items } = req.body;
+    if (!amount || !userId) {
+      return res.status(400).json({ message: 'Montant ou utilisateur manquant' });
+    }
+    // Créer le PaymentIntent Stripe
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: 'eur',
+      metadata: {
+        userId: String(userId),
+        items: JSON.stringify(items || [])
+      }
+    });
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error('Erreur Stripe:', error);
+    res.status(500).json({ message: 'Erreur lors de la création du paiement', error: error.message });
+  }
+});
 
 // GET /api/payments - Récupérer les paiements de l'utilisateur
 router.get('/', authenticateToken, async (req, res) => {
@@ -58,6 +152,14 @@ router.post('/', authenticateToken, async (req, res) => {
       status: 'COMPLETED' // À intégrer avec un vrai système de paiement (Stripe, PayPal, etc.)
     });
 
+    // Notifier l'admin (commande espèces)
+    await sendAdminOrderEmail({
+      clientName: req.user.firstName || req.user.email || payment.userId,
+      amount,
+      paymentMethod,
+      description,
+      createdAt: payment.createdAt
+    });
     res.status(201).json({ message: 'Paiement effectué avec succès', payment });
   } catch (error) {
     res.status(500).json({ message: 'Erreur serveur', error: error.message });

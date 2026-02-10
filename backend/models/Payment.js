@@ -51,4 +51,8 @@ const Payment = sequelize.define('Payment', {
     }
 });
 
+const User = require('./User');
+const Service = require('./Service');
+Payment.belongsTo(User, { foreignKey: 'userId' });
+Payment.belongsTo(Service, { foreignKey: 'serviceId' });
 module.exports = Payment;
