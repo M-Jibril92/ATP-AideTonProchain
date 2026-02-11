@@ -18,6 +18,10 @@ import Payment from './pages/Payment';
 // Import de la page d'activation
 import Activate from './pages/Activate';
 
+// Pages de réinitialisation du mot de passe
+import PasswordReset from './pages/PasswordReset';
+import PasswordResetConfirm from './pages/PasswordResetConfirm';
+
 // Nouvelle page
 import SelectTime from './pages/SelectTime';
 
@@ -65,6 +69,10 @@ export default function App() {
 
           {/* Route d'activation */}
           <Route path="/activate" element={<Activate />} />
+
+          {/* Routes de réinitialisation de mot de passe */}
+          <Route path="/password-reset" element={<PasswordReset />} />
+          <Route path="/password-reset-confirm" element={<PasswordResetConfirm />} />
 
           {/* Espace admin : commandes passées */}
           <Route

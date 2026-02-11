@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import DOMPurify from 'dompurify';
 import AdresseAutoComplete from '../components/AdresseAutoComplete.jsx';
 import { useAuth } from '../contexts/useAuth';
 import { useCart } from '../contexts/CartContext';
@@ -17,6 +18,29 @@ export default function Payment() {
     quartier: ''
   });
   const [error, setError] = useState('');
+
+  // ✅ Sanitize input
+  const sanitizeInput = (input) => {
+    if (typeof input !== 'string') return '';
+    return DOMPurify.sanitize(input.trim(), { ALLOWED_TAGS: [] });
+  };
+
+  // ✅ Validate address
+  const validateAddress = (addr) => {
+    const maxLength = 100;
+    if (!addr.rue || addr.rue.trim().length === 0) return 'Rue requise';
+    if (!addr.ville || addr.ville.trim().length === 0) return 'Ville requise';
+    if (addr.rue.length > maxLength) return 'Rue trop longue';
+    if (addr.ville.length > maxLength) return 'Ville trop longue';
+    if (addr.batiment && addr.batiment.length > maxLength) return 'Bâtiment trop long';
+    return null;
+  };
+
+  // ✅ Validate amount
+  const validateAmount = (amt) => {
+    const amount = parseFloat(amt);
+    return !isNaN(amount) && amount > 0 && amount < 100000;
+  };
 
   if (!user) {
     return (
@@ -54,23 +78,58 @@ export default function Payment() {
 
   const handleStripeCheckout = async () => {
     setError('');
-    if (!address.rue || !address.ville) {
-      setError('Merci de renseigner au moins la rue et la ville.');
+    
+    // ✅ Validate address
+    const addressError = validateAddress(address);
+    if (addressError) {
+      setError(addressError);
       return;
     }
+
+    // ✅ Validate amount
+    if (!validateAmount(total)) {
+      setError('Montant invalide');
+      return;
+    }
+
     try {
+      // Sanitize address data
+      const sanitizedAddress = {
+        rue: sanitizeInput(address.rue),
+        ville: sanitizeInput(address.ville),
+        batiment: sanitizeInput(address.batiment),
+        quartier: sanitizeInput(address.quartier)
+      };
+
+      // D'abord sauvegarder la commande
+      const amountTotal = items.reduce((sum, item) => sum + (item.price || 0) * item.qty, 0).toFixed(2);
+      await fetch('http://localhost:5000/api/payments/save-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          items: items,
+          amount: amountTotal,
+          paymentMethod: 'CARD',
+          address: sanitizedAddress,
+          status: 'PENDING'
+        })
+      });
+
+      // Puis créer la session Stripe
       const response = await fetch('http://localhost:5000/api/payments/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: items.map(item => ({
-            name: item.title,
-            quantity: item.qty,
-            price: Math.round((item.price || 0) * 100),
+            name: sanitizeInput(item.title),
+            quantity: Math.max(1, Math.min(99, parseInt(item.qty) || 1)),
+            price: Math.round((parseFloat(item.price) || 0) * 100),
           })),
           userId: user.id,
           email: user.email,
-          address
+          address: sanitizedAddress,
+          reservationDate: reservationDate || 'Non spécifiée'
         })
       });
       const data = await response.json();
@@ -83,14 +142,55 @@ export default function Payment() {
 
   const handleCashPayment = async () => {
     setError('');
-    if (!address.rue || !address.ville) {
-      setError('Merci de renseigner au moins la rue et la ville.');
+    
+    // ✅ Validate address
+    const addressError = validateAddress(address);
+    if (addressError) {
+      setError(addressError);
       return;
     }
-    // Ici tu peux envoyer la commande au backend (à adapter si tu veux stocker les paiements espèces)
-    alert('Commande validée pour paiement en espèce sur place !');
-    clear();
-    navigate('/tasks');
+
+    // ✅ Validate amount
+    if (!validateAmount(total)) {
+      setError('Montant invalide');
+      return;
+    }
+
+    try {
+      // Sanitize address data
+      const sanitizedAddress = {
+        rue: sanitizeInput(address.rue),
+        ville: sanitizeInput(address.ville),
+        batiment: sanitizeInput(address.batiment),
+        quartier: sanitizeInput(address.quartier)
+      };
+
+      // Sauvegarder la commande en espèce
+      const amountTotal = items.reduce((sum, item) => sum + (item.price || 0) * item.qty, 0).toFixed(2);
+      const response = await fetch('http://localhost:5000/api/payments/save-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          items: items,
+          amount: amountTotal,
+          paymentMethod: 'CASH',
+          address: sanitizedAddress,
+          status: 'PENDING'
+        })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Erreur lors de la sauvegarde');
+      }
+
+      alert('Commande validée pour paiement en espèce sur place !');
+      clear();
+      navigate('/tasks');
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -148,22 +248,22 @@ export default function Payment() {
           <h3 style={{marginBottom: '1rem'}}>Adresse de la prestation</h3>
           <div style={{display:'flex', gap:'1rem', marginBottom:'0.7rem'}}>
             <div style={{flex:2}}>
-              <AdresseAutoComplete value={address.rue} onChange={val=>setAddress({...address, rue: val})} />
+              <AdresseAutoComplete value={address.rue} onChange={val=>setAddress({...address, rue: sanitizeInput(val)})} />
             </div>
             <div style={{flex:1}}>
-              <input type="text" placeholder="Ville*" value={address.ville} onChange={e=>setAddress({...address, ville: e.target.value})} style={{width:'100%', padding:'0.7rem', borderRadius:6, border:'1px solid #ddd'}} required />
+              <input type="text" placeholder="Ville*" value={address.ville} onChange={e=>setAddress({...address, ville: sanitizeInput(e.target.value)})} style={{width:'100%', padding:'0.7rem', borderRadius:6, border:'1px solid #ddd'}} required />
             </div>
           </div>
           <div style={{display:'flex', gap:'1rem', marginBottom:'0.7rem'}}>
-            <input type="text" placeholder="Bâtiment / Immeuble" value={address.batiment} onChange={e=>setAddress({...address, batiment: e.target.value})} style={{flex:1, padding:'0.7rem', borderRadius:6, border:'1px solid #ddd'}} />
+            <input type="text" placeholder="Bâtiment / Immeuble" value={address.batiment} onChange={e=>setAddress({...address, batiment: sanitizeInput(e.target.value)})} style={{flex:1, padding:'0.7rem', borderRadius:6, border:'1px solid #ddd'}} />
           </div>
-          {error && <div style={{color:'red', marginBottom:'0.7rem'}}>{error}</div>}
+          {error && <div style={{color:'red', marginBottom:'0.7rem', padding:'0.5rem', background:'#ffebee', borderRadius:'4px'}}>{error}</div>}
           <button
             type="submit"
             className="btn btn-primary"
             style={{ width: '100%', padding: '1.2rem', fontSize: '1.2rem', fontWeight: '700', marginBottom:'0.5rem' }}
           >
-            🔒 Payer avec Stripe
+            🔒 Payer
           </button>
         </form>
         <button

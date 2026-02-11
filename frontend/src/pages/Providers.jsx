@@ -71,18 +71,7 @@ export default function Providers() {
               animation: `slideUp ${0.5 + index * 0.08}s ease`,
               position: 'relative',
               overflow: 'hidden'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-8px)';
-              e.currentTarget.style.borderColor = '#003366';
-              e.currentTarget.style.boxShadow = '0 12px 32px #b6d4e7';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.borderColor = '#b6d4e7';
-              e.currentTarget.style.boxShadow = '0 8px 24px #b6d4e7';
-            }}
-          >
+            }}>
             {/* Header with Avatar and Name */}
             <div style={{
               display: 'flex',
@@ -142,10 +131,18 @@ export default function Providers() {
                 </div>
 
                 <p style={{
-                  color: '#94a3b8',
-                  fontSize: '0.85rem',
+                  color: '#003366', // bleu foncé
+                  fontSize: '1rem',
                   margin: '0',
-                  fontStyle: 'italic'
+                  fontWeight: '500',
+                  background: 'rgba(255,255,255,0.85)',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 8px #b6d4e7',
+                  textShadow: '0 1px 2px #b6d4e7',
+                  maxWidth: '90%',
+                  lineHeight: '1.6',
+                  letterSpacing: '0.01em'
                 }}>
                   {p.experience}
                 </p>

@@ -33,7 +33,10 @@ const User = sequelize.define('User', {
     location: { type: DataTypes.STRING },
     // Validation email
     emailToken: { type: DataTypes.STRING },
-    emailVerified: { type: DataTypes.BOOLEAN, defaultValue: false }
+    emailVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
+    // Réinitialisation mot de passe
+    resetToken: { type: DataTypes.STRING },
+    resetTokenExpires: { type: DataTypes.DATE }
 });
 
 module.exports = User;

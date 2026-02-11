@@ -27,6 +27,14 @@ const registerLimiter = rateLimit({
   keyGenerator: (req) => req.body?.email || req.ip,
 });
 
+// Rate limiting pour password reset (3 par 1h)
+const passwordResetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 3,
+  message: 'Trop de demandes de réinitialisation, essayez dans 1 heure',
+  keyGenerator: (req) => req.body?.email || req.ip,
+});
+
 // Middleware pour les headers de sécurité
 const securityHeaders = helmet({
   contentSecurityPolicy: {
@@ -73,6 +81,7 @@ module.exports = {
   generalLimiter,
   loginLimiter,
   registerLimiter,
+  passwordResetLimiter,
   securityHeaders,
   validateSecurityHeaders,
   securityLogger,

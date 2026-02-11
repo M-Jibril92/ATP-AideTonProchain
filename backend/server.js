@@ -30,7 +30,16 @@ app.use(generalLimiter);
 
 // -------------------- CORS --------------------
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Accepte localhost avec n'importe quel port en développement
+    if (!origin || /^http:\/\/localhost:\d+$/.test(origin)) {
+      callback(null, true);
+    } else if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -38,8 +47,30 @@ app.use(cors({
 }));
 
 // -------------------- BODY PARSING --------------------
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' })); // Limite réduite pour sécurité
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+// -------------------- HEADERS SÉCURISÉS --------------------
+app.use((req, res, next) => {
+  // Empêcher les accès directs au cache
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
+  // Empêcher Clickjacking
+  res.setHeader('X-Frame-Options', 'DENY');
+  
+  // Empêcher MIME type sniffing
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  
+  // XSS Protection
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  
+  // Referrer Policy
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  next();
+});
 
 // -------------------- ANTI PATH TRAVERSAL --------------------
 app.use((req, res, next) => {
@@ -83,18 +114,21 @@ app.use((err, req, res, next) => {
 // -------------------- START SERVER --------------------
 const PORT = process.env.PORT || 5000;
 
-sequelize
-  .sync({ alter: process.env.NODE_ENV !== 'production' })
-  .then(() => {
+async function startServer() {
+  try {
+    // Désactiver ALTER en développement pour SQLite (problèmes FOREIGN KEY)
+    await sequelize.sync({ alter: false });
     console.log('✅ Base de données synchronisée');
     app.listen(PORT, () => {
       console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`);
     });
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error('❌ Erreur BDD:', err);
     process.exit(1);
-  });
+  }
+}
+
+startServer();
 
 // -------------------- SHUTDOWN --------------------
 process.on('SIGINT', () => {

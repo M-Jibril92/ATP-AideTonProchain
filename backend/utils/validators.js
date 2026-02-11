@@ -159,10 +159,63 @@ const validateService = (data) => {
   return Object.keys(errors).length > 0 ? errors : null;
 };
 
+// Validation pour l'adresse de livraison
+const validateAddress = (address) => {
+  if (!address || typeof address !== 'object') {
+    return 'Adresse invalide';
+  }
+
+  const { rue, ville, batiment, quartier } = address;
+
+  // Rue requise
+  if (!rue || typeof rue !== 'string' || rue.trim().length === 0) {
+    return 'Rue requise';
+  }
+  if (rue.length > 100) {
+    return 'Rue trop longue (max 100 caractères)';
+  }
+
+  // Ville requise
+  if (!ville || typeof ville !== 'string' || ville.trim().length === 0) {
+    return 'Ville requise';
+  }
+  if (ville.length > 100) {
+    return 'Ville trop longue (max 100 caractères)';
+  }
+
+  // Bâtiment (optionnel)
+  if (batiment && batiment.length > 100) {
+    return 'Bâtiment trop long (max 100 caractères)';
+  }
+
+  // Quartier (optionnel)
+  if (quartier && quartier.length > 100) {
+    return 'Quartier trop long (max 100 caractères)';
+  }
+
+  return null; // Aucune erreur
+};
+
+// Sanitization de l'adresse
+const sanitizeAddress = (address) => {
+  if (!address || typeof address !== 'object') {
+    return { rue: '', ville: '', batiment: '', quartier: '' };
+  }
+
+  return {
+    rue: sanitizeString(address.rue || ''),
+    ville: sanitizeString(address.ville || ''),
+    batiment: sanitizeString(address.batiment || ''),
+    quartier: sanitizeString(address.quartier || '')
+  };
+};
+
 module.exports = {
   validators,
   validateRegister,
   validatePayment,
   validateService,
+  validateAddress,
   sanitizeString,
+  sanitizeAddress,
 };

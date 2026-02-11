@@ -14,11 +14,20 @@ export default function AdresseAutoComplete({ value, onChange }) {
       setShow(false);
       return;
     }
-    // Appel API Adresse
-    const resp = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(val)}&limit=5&autocomplete=1&region=11`);
-    const data = await resp.json();
-    setSuggestions(data.features.map(f => f.properties.label));
-    setShow(true);
+    try {
+      // Appel API Adresse
+      const resp = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(val)}&limit=5&autocomplete=1&region=11`);
+      const data = await resp.json();
+      if (data && data.features) {
+        setSuggestions(data.features.map(f => f.properties.label));
+        setShow(true);
+      } else {
+        setSuggestions([]);
+      }
+    } catch (err) {
+      console.error('Erreur API Adresse:', err);
+      setSuggestions([]);
+    }
   };
 
   const handleSelect = (s) => {
