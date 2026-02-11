@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Payment() {
   const { user } = useAuth();
-  const { items, clear } = useCart();
+  const { items, clear, reservationDate } = useCart();
   const navigate = useNavigate();
   const total = items.reduce((sum, item) => sum + (item.price || 0) * item.qty, 0).toFixed(2);
   const [address, setAddress] = useState({
@@ -176,6 +176,7 @@ export default function Payment() {
           amount: amountTotal,
           paymentMethod: 'CASH',
           address: sanitizedAddress,
+          reservationDate: reservationDate || 'Non spécifiée',
           status: 'PENDING'
         })
       });
