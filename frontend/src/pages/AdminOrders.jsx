@@ -31,7 +31,9 @@ export default function AdminOrders() {
       if (items.length > 0 && items[0].timeSlot) {
         return items[0].timeSlot;
       }
-    } catch (e) {}
+    } catch {
+      // Erreur de parsing JSON, retour N/A
+    }
     return 'N/A';
   };
 
@@ -43,7 +45,9 @@ export default function AdminOrders() {
         const { rue, batiment, quartier, ville } = parsed.address;
         return `${rue}${batiment ? ', ' + batiment : ''}${quartier ? ', ' + quartier : ''} ${ville}`;
       }
-    } catch (e) {}
+    } catch {
+      // Erreur de parsing JSON, retour N/A
+    }
     return 'N/A';
   };
 
