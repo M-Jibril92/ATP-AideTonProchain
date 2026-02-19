@@ -1,0 +1,7 @@
+# Image placeholders for M2L network diagrams
+# 
+# Expected images:
+# - m2l-schema-general.png: General infrastructure schema
+# - m2l-schema-interconnexions.png: Detailed interconnections schema
+#
+# These images should be uploaded to this directory.
